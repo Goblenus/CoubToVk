@@ -26,6 +26,7 @@ def main():
     parser.add_argument('-t', '--sleep_time', type=int, default=1800)
     parser.add_argument('-n', '--coub_upload_name', type=str, default="")
     parser.add_argument('-d', '--coub_upload_description', type=str, default="#coub")
+    parser.add_argument('-ap', '--coub_api_path', type=str, default="/api/v2/timeline/hot")
     args = parser.parse_args()
 
     if not str(args.storage_folder).startswith("/"):
@@ -56,12 +57,12 @@ def main():
                 with open(yesterday_storage_file_path, encoding="utf-8") as yesterday_storage_file:
                     yesterday_storage = json.loads(yesterday_storage_file.read())
 
-            total_pages = get_coubs_data()["total_pages"]
+            total_pages = get_coubs_data(url=args.coub_api_path)["total_pages"]
 
             new_coub_data = None
 
             for i in range(1, total_pages):
-                coubs_data = get_coubs_data()
+                coubs_data = get_coubs_data(page=i, url=args.coub_api_path)
 
                 for coub_data in coubs_data["coubs"]:
                     if (current_storage is not None and str(coub_data['permalink']) in current_storage["Coubs"]) \
